@@ -25,6 +25,7 @@ The data analysis will take the array of coordinates and perform a variety of st
 + Standard deviation of shot placement (Spread of the shots)
 
 This data is visualized on a grid and can then be interpreted to return meaningful information as feedback.
+![Example Figure 2](https://github.com/user-attachments/assets/f81a6674-eaab-47be-b0aa-44f6670b6f8e)
 
 ## Feedback
 The feedback is in the form of a few sentences. The main feedback will stem from the positioning of the median. If the median is too, high, the user will be told to aim lower. There will also be a breakdown of what can cause these issues. This breakdown will be dependant on the sport, what may cause a high shot in airsoft may not translate directly to archery. Grouping is also something that is taken into account depending on the distance. A larger group size at a distance may be comparable to that of a smaller one up close. All feedback is meant to provide the user with a better understanding of what they can do to improve their accuracy, precision, and equipement as needed.
