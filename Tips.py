@@ -1,4 +1,18 @@
+'''
+Functions that provide feedback to the user based on the data.
+'''
+
 def tips(center, group_size):
+  '''
+  Provides feedback in the form of tips.
+
+  Args:
+    center (int): The center of the group.
+    group_size (float): the size of the group.
+
+  Returns:
+    None
+  '''
   cx = center[0]
   cy = center[1]
 

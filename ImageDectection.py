@@ -1,39 +1,47 @@
+'''
+The image manipulation for the computer vision.
+'''
+
 import cv2
 import numpy as np
 import os
 
-folder_path = "Images/Training/"
+FOLDER = "Images/Training/"
 
 def filter_images():
-    # List all files in the folder
-    image_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.png', '.jpg', '.jpeg'))]
+    '''
+    Used to iterate through all of the images in a folder and return possible hit locations.
+
+    Args:
+        None
+
+    Returns:
+        shot_positions (list): The coordinates of all of the shots.
+    '''
+    image_files = [os.path.join(FOLDER, f) for f in os.listdir(FOLDER) if f.endswith(('.png', '.jpg', '.jpeg'))]
     print("Files:", image_files)
 
     for image_file in image_files:
         image = cv2.imread(image_file)
-        # Process the image as needed
         cv2.imshow("Image", image)
         cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    # Preprocess the image
+    # Need to adjust the parameters to better identify shots
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     _, thresh = cv2.threshold(blurred, 200, 255, cv2.THRESH_BINARY_INV)
 
-    # Detect contours (potential shot holes)
     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Initialize a list to hold shot positions
     shot_positions = []
 
-    # Define target grid dimensions
     height, width = image.shape[:2]
-    grid_size = (10, 10)  # Assume a 10x10 grid for simplicity
+    # Creating a 10x10 grid for now, should be made to measurement of the target in inches
+    grid_size = (10, 10)
 
-    # Process each contour
     for contour in contours:
-        # Calculate the bounding box and centroid
+        # Calculate the bounding box
         x, y, w, h = cv2.boundingRect(contour)
         cx, cy = x + w // 2, y + h // 2
 
@@ -55,14 +63,27 @@ def filter_images():
 
     # Output the shot positions as an array
     print("Shot Positions:", shot_positions)
+    return shot_positions
 
 def image_transform(image):
+    '''
+    Used to determine the grid positioning on the non-uniform image.
+
+    Args:
+        image (var): The processed image
+
+    Returns:
+        grid_image: The same image with a grid overlayed
+    '''
     # Overlay a grid on the image
     grid_size = 10
     height, width, _ = image.shape
     grid_x = width // grid_size
     grid_y = height // grid_size
     
+
+    grid_image = image
+    return grid_image
     # Identify corners on the image
         # Turn black and white
         # Use a gaussian blur 

@@ -1,7 +1,13 @@
 import math
 import matplotlib.pyplot as plt
 
+
 def center_points(points):
+  '''
+  Calculates the median shot placement.
+
+  
+  '''
   average_x = sum(point[0] for point in points) / len(points)
   average_y = sum(point[1] for point in points) / len(points)
   print(f"Shots Center ({average_x}, {average_y})")

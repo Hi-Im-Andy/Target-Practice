@@ -1,6 +1,15 @@
+'''
+The main program used to run the Target Practice code.
+'''
+
 import ImageDectection as ID
 import DataAnalysis as DA
 import Tips
+import Logger
+
+__author__ = "Andy Hernandez"
+__date__ = "01/23/2025"
+__status__ = "Development"
 
 def sample_run():
     # Points
