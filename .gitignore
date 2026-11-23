@@ -169,3 +169,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Synthetic test images (regenerate with tools/make_synthetic.py)
+web/test/data/
+program.log

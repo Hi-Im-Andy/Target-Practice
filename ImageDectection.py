@@ -1,5 +1,9 @@
 '''
 The image manipulation for the computer vision.
+
+NOTE: superseded by web/tp-core.js, which does paper detection, perspective
+correction and hole detection and is used by the phone web app (web/index.html).
+This file is kept as the original desktop prototype.
 '''
 
 import cv2

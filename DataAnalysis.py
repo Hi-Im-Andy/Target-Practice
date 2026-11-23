@@ -4,9 +4,13 @@ import matplotlib.pyplot as plt
 
 def center_points(points):
   '''
-  Calculates the median shot placement.
+  Calculates the mean point of impact (the average of all shots).
 
-  
+  Args:
+    points (list): (x, y) shot coordinates, origin at the aim point.
+
+  Returns:
+    center (tuple): (x, y) average position.
   '''
   average_x = sum(point[0] for point in points) / len(points)
   average_y = sum(point[1] for point in points) / len(points)
@@ -14,11 +18,33 @@ def center_points(points):
   center = (average_x, average_y)
   return center
 
-def filter_outliers(points):
-  average_x = sum(point[0] for point in points) / len(points)
-  average_y = sum(point[1] for point in points) / len(points)
-  filtered_points = [point for point in points if abs(point[0] - average_x) < 2 and abs(point[1] - average_y) < 2]
-  return filtered_points
+def _median(values):
+  s = sorted(values)
+  m = len(s) // 2
+  return s[m] if len(s) % 2 else 0.5 * (s[m - 1] + s[m])
+
+def filter_outliers(points, factor=2.5):
+  '''
+  Removes flyers: shots much further from the median center than is typical.
+  Uses the median so the flyers themselves do not drag the center (the same
+  rule as the web app). Needs at least 5 shots; otherwise returns all points.
+
+  Args:
+    points (list): (x, y) shot coordinates.
+    factor (float): how many median radii away counts as a flyer.
+
+  Returns:
+    filtered_points (list): points without flyers.
+  '''
+  if len(points) < 5:
+    return list(points)
+  cx = _median([p[0] for p in points])
+  cy = _median([p[1] for p in points])
+  radii = [math.hypot(p[0] - cx, p[1] - cy) for p in points]
+  med_r = _median(radii)
+  if med_r == 0:
+    return list(points)
+  return [p for p, r in zip(points, radii) if not (r > factor * med_r and r > 0.5)]
 
 def nearest_hit(points):
   min_distance = float('inf')
@@ -44,17 +70,16 @@ def furthest_hit(points):
   return furthest_point
 
 def grouping_size(points):
-  dx = 0
-  dy = 0
+  '''
+  Extreme spread: the distance between the two shots furthest apart.
+  (The old version combined the largest x gap and largest y gap from
+  different pairs of shots, which overstated the group.)
+  '''
+  distance = 0.0
   for i in range(len(points)):
     for j in range(i + 1, len(points)):
-      if (dx < abs(points[i][0] - points[j][0])):
-        dx = abs(points[i][0] - points[j][0])
-      if (dy < abs(points[i][1] - points[j][1])):
-        dy = abs(points[i][1] - points[j][1])
-  distance = (dx, dy)
-  distance = math.sqrt(distance[0]**2 + distance[1]**2)
-  print(f"Grouping Size: ({dx}, {dy}) : {distance}")
+      distance = max(distance, math.hypot(points[i][0] - points[j][0], points[i][1] - points[j][1]))
+  print(f"Grouping Size: {distance}")
   return distance
 
 def display_points(points, center, nearest, furthest):
