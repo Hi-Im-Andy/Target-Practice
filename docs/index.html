@@ -205,6 +205,10 @@
     <div class="stack">
       <button id="newPhoto">Score another target</button>
       <button class="secondary" id="saveImg">Save result image</button>
+      <div id="savedWrap" class="card" style="display:none">
+        <p class="hint" style="margin-top:0">Press and hold the image to save or share it.</p>
+        <img id="savedImg" alt="Result image" style="width:100%;border-radius:10px;display:block">
+      </div>
       <button class="ghost" id="backCorners">Adjust corners or aim point</button>
     </div>
     <div class="card" style="margin-top:12px">
@@ -1561,7 +1565,7 @@
   document.querySelectorAll('#unitSeg button').forEach((b) => b.addEventListener('click', () => {
     st.unit = b.dataset.u; store.set('unit', st.unit); renderResults();
   }));
-  $('newPhoto').addEventListener('click', () => show('s-start'));
+  $('newPhoto').addEventListener('click', () => { $('savedWrap').style.display = 'none'; show('s-start'); });
   $('backCorners').addEventListener('click', () => { show('s-corners'); drawCorners(); });
   $('learnBlank').addEventListener('click', () => {
     const all = st.hits.filter((h) => !h.manual).concat(st.ignored);
@@ -1588,13 +1592,17 @@
     ctx.fillText(line1, 14, src.height + 30);
     ctx.font = '14px system-ui, sans-serif'; ctx.fillStyle = '#bdb8ab';
     ctx.fillText(`Target Practice · ${new Date().toLocaleDateString()}${distanceFt() ? ' · ' + distanceFt() + ' ft' : ''}`, 14, src.height + 54);
-    out.toBlob((blob) => {
+    // Show the image inline: press-and-hold saves it on phones, and it works
+    // where downloads are blocked. Also try a download where allowed.
+    const url = out.toDataURL('image/png');
+    $('savedImg').src = url;
+    $('savedWrap').style.display = 'block';
+    $('savedWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try {
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `target-${new Date().toISOString().slice(0, 10)}.png`;
+      a.href = url; a.download = `target-${new Date().toISOString().slice(0, 10)}.png`;
       document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    }, 'image/png');
+    } catch (e) { /* blocked: the inline image is still there */ }
   });
   window.addEventListener('resize', () => {
     if ($('s-corners').classList.contains('active') && st.photo) drawCorners();
